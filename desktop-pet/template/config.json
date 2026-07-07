@@ -1,0 +1,59 @@
+{
+  "pet_name": "{{PET_NAME}}",
+  "species": "{{SPECIES}}",
+  "size": 200,
+  "sprite_sheet": "spritesheet.png",
+  "behaviors": {
+    "idle": {
+      "start_frame": 0,
+      "frame_count": 5,
+      "fps": 3,
+      "loop": true,
+      "columns": 10
+    },
+    "walk": {
+      "start_frame": 5,
+      "frame_count": 6,
+      "fps": 4,
+      "loop": true,
+      "columns": 10
+    },
+    "sit": {
+      "start_frame": 11,
+      "frame_count": 4,
+      "fps": 2,
+      "loop": true,
+      "columns": 10
+    },
+    "tilt_head": {
+      "start_frame": 15,
+      "frame_count": 3,
+      "fps": 4,
+      "loop": false,
+      "next_behavior": "idle",
+      "columns": 10
+    },
+    "belly_up": {
+      "start_frame": 18,
+      "frame_count": 4,
+      "fps": 5,
+      "loop": false,
+      "next_behavior": "idle",
+      "columns": 10
+    },
+    "sleep": {
+      "start_frame": 22,
+      "frame_count": 4,
+      "fps": 1,
+      "loop": true,
+      "columns": 10
+    }
+  },
+  "random_behavior_weights": {
+    "idle": 40,
+    "walk": 30,
+    "sit": 20,
+    "sleep": 10
+  },
+  "idle_timeout": 30
+}

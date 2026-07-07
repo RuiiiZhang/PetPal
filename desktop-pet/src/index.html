@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PetPal</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 宠物名字悬浮标签 -->
+    <div id="pet-name" class="pet-name hidden"></div>
+    <!-- 宠物精灵画布 -->
+    <canvas id="pet-canvas" width="200" height="200"></canvas>
+    <!-- 右键菜单 -->
+    <div id="context-menu" class="context-menu hidden">
+      <div class="menu-item" data-action="resize">📐 设置大小</div>
+      <div class="menu-item" data-action="name">✏️ 修改名字</div>
+      <div class="menu-separator"></div>
+      <div class="menu-item" data-action="hide">👀 隐藏</div>
+      <div class="menu-item" data-action="quit">❌ 退出</div>
+    </div>
+    <!-- 大小调整对话框 -->
+    <div id="resize-dialog" class="dialog hidden">
+      <div class="dialog-content">
+        <p>设置宠物大小</p>
+        <input type="range" id="size-slider" min="100" max="500" value="200" />
+        <div class="dialog-buttons">
+          <button id="size-confirm">确定</button>
+          <button id="size-cancel">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="main.ts"></script>
+</body>
+</html>

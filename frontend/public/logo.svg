@@ -1,0 +1,6 @@
+<svg width="200" height="40" viewBox="0 0 200 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Heart/Paw icon -->
+  <path d="M20 32C20 32 8 24 8 15.5C8 12 10.5 9 14 9C16.5 9 18.5 10.5 20 12.5C21.5 10.5 23.5 9 26 9C29.5 9 32 12 32 15.5C32 24 20 32 20 32Z" stroke="#d4a574" stroke-width="1.5" fill="none"/>
+  <!-- Text -->
+  <text x="44" y="26" font-family="Georgia, serif" font-size="20" font-weight="500" fill="#f5f0eb" letter-spacing="2">PetPal</text>
+</svg>

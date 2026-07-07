@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+
+# Build outputs
+.next/
+dist/
+build/
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data & uploads (sensitive)
+backend/data/
+backend/uploads/
+backend/output/
+ai-pipeline/output/
+
+# Desktop pet build artifacts
+desktop-pet/src-tauri/target/

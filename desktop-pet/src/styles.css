@@ -1,0 +1,189 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  background: transparent;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  width: 100%;
+  height: 100%;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+#pet-canvas {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+#pet-canvas:active {
+  cursor: grabbing;
+}
+
+/* 宠物名字 */
+.pet-name {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-family: "Microsoft YaHei", sans-serif;
+  white-space: nowrap;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.pet-name.hidden {
+  opacity: 0;
+}
+
+.pet-name.visible {
+  opacity: 1;
+}
+
+/* 右键菜单 */
+.context-menu {
+  position: fixed;
+  background: rgba(30, 30, 30, 0.95);
+  border-radius: 8px;
+  padding: 6px 0;
+  min-width: 150px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+  backdrop-filter: blur(10px);
+}
+
+.context-menu.hidden {
+  display: none;
+}
+
+.menu-item {
+  padding: 8px 16px;
+  color: #e0e0e0;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: "Microsoft YaHei", sans-serif;
+  transition: background 0.15s;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.menu-separator {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 4px 8px;
+}
+
+/* 对话框 */
+.dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.dialog.hidden {
+  display: none;
+}
+
+.dialog-content {
+  background: #2a2a2a;
+  border-radius: 12px;
+  padding: 24px;
+  color: #e0e0e0;
+  font-family: "Microsoft YaHei", sans-serif;
+  text-align: center;
+  min-width: 220px;
+}
+
+.dialog-content p {
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.dialog-content input[type="range"] {
+  width: 100%;
+  margin-bottom: 16px;
+  accent-color: #6c5ce7;
+}
+
+.dialog-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.dialog-buttons button {
+  padding: 6px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: "Microsoft YaHei", sans-serif;
+}
+
+.dialog-buttons button:first-child {
+  background: #6c5ce7;
+  color: #fff;
+}
+
+.dialog-buttons button:last-child {
+  background: #444;
+  color: #ccc;
+}
+
+.dialog-buttons button:hover {
+  opacity: 0.85;
+}
+
+/* 动画 - 歪头效果 */
+@keyframes tilt {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(-8deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.tilting #pet-canvas {
+  animation: tilt 0.4s ease-in-out;
+}
+
+/* 翻肚皮效果 */
+@keyframes belly {
+  0% { transform: rotateY(0deg); }
+  25% { transform: rotateY(90deg); }
+  50% { transform: rotateY(180deg) scale(1.05); }
+  100% { transform: rotateY(0deg); }
+}
+
+.belly-up #pet-canvas {
+  animation: belly 0.8s ease-in-out;
+}

@@ -1,0 +1,193 @@
+"""
+最终打包服务
+将桌宠程序 + 贴纸包 + 配置文件打包成一个交付 ZIP
+"""
+
+import os
+import json
+import zipfile
+from typing import Dict, Any
+from app.core.config import settings
+
+
+class PackageBuilder:
+    """最终交付包构建服务"""
+
+    def build_package(
+        self,
+        order_id: str,
+        pet_name: str,
+        desktop_pet_dir: str,
+        sticker_pack_zip: str = "",
+        plan: str = "standard"
+    ) -> str:
+        """
+        构建最终交付包 ZIP。
+
+        根据套餐类型打包不同内容：
+        - basic (¥19.9): 桌宠程序
+        - standard (¥29.9): 桌宠程序 + 贴纸包
+        - premium (¥49.9): 桌宠程序 + 贴纸包 + 源文件（精灵表、帧序列）
+
+        Args:
+            order_id: 订单ID
+            pet_name: 宠物名称
+            desktop_pet_dir: 桌宠程序目录
+            sticker_pack_zip: 贴纸包ZIP路径（可选）
+            plan: 套餐类型
+
+        Returns:
+            str: 最终交付ZIP路径
+
+        Raises:
+            RuntimeError: 打包失败时抛出
+        """
+        try:
+            output_dir = os.path.join(settings.OUTPUT_DIR, order_id)
+            os.makedirs(output_dir, exist_ok=True)
+
+            # 交付包文件名
+            safe_name = "".join(c for c in pet_name if c.isalnum() or c in "_-") or "petpal"
+            package_path = os.path.join(output_dir, f"{safe_name}_PetPal.zip")
+
+            with zipfile.ZipFile(package_path, "w", zipfile.ZIP_DEFLATED) as zf:
+                # 1. 桌宠程序（所有套餐都包含）
+                self._add_directory_to_zip(
+                    zf, desktop_pet_dir,
+                    prefix=f"{safe_name}_桌宠/"
+                )
+
+                # 2. 贴纸包（standard 及以上）
+                if plan in ("standard", "premium") and sticker_pack_zip:
+                    if os.path.exists(sticker_pack_zip):
+                        zf.write(
+                            sticker_pack_zip,
+                            f"{safe_name}_贴纸包/sticker_pack.zip"
+                        )
+
+                # 3. 源文件（premium）
+                if plan == "premium":
+                    self._add_source_files(zf, output_dir, safe_name)
+
+                # 4. 项目说明文件
+                self._add_readme(zf, pet_name, plan, safe_name)
+
+                # 5. 许可协议
+                self._add_license(zf, safe_name)
+
+            return package_path
+
+        except Exception as e:
+            raise RuntimeError(f"最终打包失败: {str(e)}")
+
+    def _add_directory_to_zip(
+        self, zf: zipfile.ZipFile, dir_path: str, prefix: str = ""
+    ):
+        """
+        递归添加目录到 ZIP。
+
+        Args:
+            zf: ZIP 文件对象
+            dir_path: 源目录路径
+            prefix: ZIP 内路径前缀
+        """
+        if not os.path.exists(dir_path):
+            return
+
+        for root, dirs, files in os.walk(dir_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                arcname = os.path.join(
+                    prefix,
+                    os.path.relpath(file_path, dir_path)
+                )
+                zf.write(file_path, arcname)
+
+    def _add_source_files(self, zf: zipfile.ZipFile, output_dir: str, name: str):
+        """
+        添加源文件到 ZIP（精灵表、帧序列等）。
+
+        Args:
+            zf: ZIP 文件对象
+            output_dir: 订单输出目录
+            name: 宠物名称（用于目录前缀）
+        """
+        source_dir = os.path.join(output_dir, "source")
+        os.makedirs(source_dir, exist_ok=True)
+
+        # 收集源文件
+        source_files = [
+            ("sprite_sheet.png", "精灵表.png"),
+            ("sprite_metadata.json", "精灵表配置.json"),
+            ("character_preview.png", "角色原图.png"),
+            ("animation_preview.gif", "动画预览.gif"),
+        ]
+
+        for src_name, dst_name in source_files:
+            src_path = os.path.join(output_dir, src_name)
+            if os.path.exists(src_path):
+                zf.write(src_path, f"{name}_源文件/{dst_name}")
+
+        # 添加帧序列目录
+        frames_dir = os.path.join(output_dir, "frames")
+        if os.path.exists(frames_dir):
+            self._add_directory_to_zip(
+                zf, frames_dir,
+                prefix=f"{name}_源文件/帧序列/"
+            )
+
+    def _add_readme(self, zf: zipfile.ZipFile, pet_name: str, plan: str, name: str):
+        """添加项目说明文件"""
+        plan_names = {
+            "basic": "基础版 (¥19.9)",
+            "standard": "标准版 (¥29.9)",
+            "premium": "高级版 (¥49.9)",
+        }
+
+        readme = f"""# {pet_name} - PetPal 自动桌宠
+
+## 你的专属桌宠已就绪！🎉
+
+### 包含内容
+- 🖥️ {pet_name}_桌宠/ - 桌面宠物程序
+{"- 🎨 " + name + "_贴纸包/ - 动态贴纸包" if plan in ("standard", "premium") else ""}
+{"- 📦 " + name + "_源文件/ - 精灵表与帧序列源文件" if plan == "premium" else ""}
+
+### 快速开始
+
+#### 桌宠使用
+1. 进入 `{name}_桌宠/` 目录
+2. 双击 `index.html` 在浏览器中运行
+3. 宠物会自动在桌面显示
+4. 右键宠物可切换动作
+
+#### 贴纸使用
+1. 解压 `{name}_贴纸包/sticker_pack.zip`
+2. 将 GIF 贴纸添加到微信/QQ 表情收藏
+3. 支持所有主流聊天软件
+
+### 套餐信息
+- 套餐类型: {plan_names.get(plan, plan)}
+- 生成时间: 由 PetPal 自动生成
+
+### 由 PetPal 平台生成
+https://petpal.app
+"""
+        zf.writestr("README.md", readme)
+
+    def _add_license(self, zf: zipfile.ZipFile, name: str):
+        """添加许可协议"""
+        license_text = f"""PetPal 用户许可协议
+
+1. 本桌宠及其素材仅供个人使用，禁止商用。
+2. 由 AI 生成的图像版权归用户所有。
+3. PetPal 保留对生成内容的展示权（用于宣传）。
+4. 禁止对本程序进行反编译或二次分发。
+
+Generated by PetPal - https://petpal.app
+"""
+        zf.writestr("LICENSE.txt", license_text)
+
+
+# 全局单例
+package_builder = PackageBuilder()

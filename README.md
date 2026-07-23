@@ -76,6 +76,6 @@ API_KEY=your_api_key
 - **AI**: 图像生成、文案生成、桌宠构建
 - **客户端**: Tauri (Rust + Vue)
 
-## 📄 License
+## 📄 License  
 
 MIT
